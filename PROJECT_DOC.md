@@ -39,12 +39,15 @@ Focus is on creating a clean authentication flow and reusable UI components.
 - Global state management with Redux Toolkit
 
 ## Getting Started
+
 1. Clone the repository:
+
 ``` bash
 git clone <>
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -52,6 +55,7 @@ yarn
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 # or
