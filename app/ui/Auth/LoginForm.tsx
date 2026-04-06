@@ -2,6 +2,7 @@
 
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { Password } from "primereact/password";
 
 export default function LoginForm() {
   return (
@@ -10,7 +11,7 @@ export default function LoginForm() {
       <InputText id="email" />
       
       <label htmlFor="password">Password</label>
-      <InputText id="password" type="password" />
+      <Password id="password" type="password" />
 
       <Button label="Login" className="p-button-primary" />
       <Button label="Reset" className="p-button-secondary" />
