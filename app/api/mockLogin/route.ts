@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
 import { LoginRequest, LoginResponse } from "@/app/lib/definitions";
+import { mockUser } from "@/app/lib/mockData";
 
 export async function POST(request: Request): Promise<NextResponse<LoginResponse>> {
   const { email, password } = (await request.json()) as LoginRequest;
 
-  const mockUser = {
-    email: "user@email.com",
-    password: "12345678",
-    token: "mock-jwt-token",
-  };
+  const User = mockUser
 
-  if (email === mockUser.email && password === mockUser.password) {
+  if (email === User.email && password === User.password) {
     return NextResponse.json({
       success: true,
       user: {
-        email: mockUser.email,
-        token: mockUser.token,
+        email: User.email,
+        token: User.token,
       },
     });
   }

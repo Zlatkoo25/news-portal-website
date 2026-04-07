@@ -19,3 +19,9 @@ export interface LoginResponse {
   };
   message?: string;
 }
+
+export interface MockUser {
+  email: string;
+  password: string;
+  token: string;
+}
