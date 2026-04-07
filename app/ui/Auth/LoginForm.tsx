@@ -43,7 +43,7 @@ export default function LoginForm() {
       <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
       
       <label htmlFor="password">Password</label>
-      <Password id="password" type="password" value={password} onChange={(e) => 
+      <Password id="password" type="password" toggleMask value={password} onChange={(e) => 
         setPassword(e.target.value)} feedback={false} />
 
       <Button label="Login" className="p-button-primary w-full" onClick={handleLogin}/>

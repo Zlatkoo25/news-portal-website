@@ -4,31 +4,72 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import Link from "next/link";
+import { LoginResponse } from "@/app/lib/definitions";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function PasswordResetForm() {
+  const [email, setEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState("");
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+
+  const handleReset = async () => {
+    try {
+      const response = await fetch("/api/mockReset", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({email, currentPassword, newPassword }),
+      });
+
+      const data: LoginResponse = await response.json();
+
+      if (data.success) {
+        setMessage(data.message ?? "Password reset successful");
+        setTimeout(() => router.push("/login"), 2000)
+      }
+      else {
+        setMessage(data.message ?? "Failed to reset password");
+      }
+    } catch (err) {
+      setMessage("Something went wrong.")
+    }
+  }
+
   return (
     <div className="flex flex-col gap-3 max-w-sm mx-auto mb-10 mt-5 p-4">
+      <div className="flex flex-col gap-3">
+        <label htmlFor="email">Email</label>
+        <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value) } 
+        className="w-full"/>
 
-      <label htmlFor="email">Email</label>
-      <InputText id="email" />
-      
-      <label htmlFor="oldPassword">Old Password</label>
-      <Password id="oldPassword" toggleMask feedback={false} />
+        <label htmlFor="currentPassword">Old Password</label>
+        <Password inputId="currentPassword" toggleMask feedback={false} value={currentPassword} 
+          onChange={(e) => setCurrentPassword(e.target.value)} />
 
-      <label htmlFor="newPassword">New Password</label>
-      <Password id="newPassword" toggleMask />
+        <label htmlFor="newPassword">New Password</label>
+        <Password inputId="newPassword" toggleMask value={newPassword} 
+          onChange={(e) => setNewPassword(e.target.value)} />
 
-      <label htmlFor="confirmPassword">Retype New Password</label>
-      <Password id="confirmPassword" toggleMask feedback={false} />
+        <label htmlFor="retypePassword">Retype New Password</label>
+        <Password inputId="retypePassword" toggleMask feedback={false} value={retypePassword}
+          onChange={(e) => setRetypePassword(e.target.value)} />
+      </div>      
 
-      <div className="flex gap-2 mt-4 justify-around">
-        <Link href="/login" passHref>
-            <Button label="Confirm" className="p-button-secondary" />
-        </Link>
-        <Link href="/login" passHref>
-            <Button label="Cancel" className="p-button-secondary" />
+      <div className="flex flex-row gap-2 mt-4 justify-center content-between ">
+        <Button label="Confirm" className="p-button-primary w-full" onClick={handleReset} />
+
+        <Link href="/login" passHref className="w-full">
+            <Button label="Cancel" className="p-button-primary w-full" />
         </Link>
       </div>
+
+      <div className="flex max-w-xs wrap-break-words w-full justify-between">
+        {message? <p className="wrap-break-words w-full">{message}</p>: null}
+      </div>
+
     </div>
   );
 }
