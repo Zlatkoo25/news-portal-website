@@ -27,7 +27,7 @@ Focus is on creating a clean authentication flow and reusable UI components.
 - **Framework:** Next.js (App Router)
 - **Language:** TypeScript
 - **State Management:** Redux Toolkit
-- **UI Components:** PrimeReact with official theme
+- **UI Components:** PrimeReact with official theme, PrimeIcons
 - **Authentication:** NextAuth.js
 - **Styling:** PrimeReact theme with optional global CSS
 
@@ -35,6 +35,7 @@ Focus is on creating a clean authentication flow and reusable UI components.
 
 - Login page
 - Password reset page
+- Dashboard with global sidenavbar
 - Modular, reusable UI components
 - Global state management with Redux Toolkit
 

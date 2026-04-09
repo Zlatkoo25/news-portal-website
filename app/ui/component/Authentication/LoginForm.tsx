@@ -30,7 +30,7 @@ export default function LoginForm() {
 
       if (data.success) {
         setMessage(`Logged in with email: ${data.user?.email}!`);
-        setTimeout(() => {router.push('/')}, 2000)
+        setTimeout(() => {router.push('/dashboard')}, 2000)
       }
       else {
         setMessage(data.message ?? "Login failed")
