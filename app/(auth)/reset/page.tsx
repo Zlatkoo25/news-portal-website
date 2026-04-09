@@ -1,6 +1,6 @@
 'use client';
 
-import ResetForm from "@/app/ui/Auth/ResetForm";
+import ResetForm from "@/app/ui/component/Authentication/ResetForm";
 
 export default function ResetPage() {
   return (

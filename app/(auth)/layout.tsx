@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Image } from 'primereact/image';
 
 export const metadata: Metadata = {
   title: "Login - Nextjs Project",
