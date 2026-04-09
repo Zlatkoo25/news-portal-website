@@ -1,1 +1,4 @@
-// NOTE: for utility functions
+// Validation utilities
+
+export const isValidPassword = (pwd: string) =>
+  pwd.trim() !== "" && pwd.length >= 8;

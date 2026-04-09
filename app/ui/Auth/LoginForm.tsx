@@ -7,12 +7,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoginResponse } from "@/app/lib/definitions";
+import { isValidPassword } from "@/app/lib/utils";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+
+  // NOTE: Preliminary basic frontend button enable/disable input validation flag 
+  const isFormValid = email.trim() !== "" && 
+  isValidPassword(password);
 
   const handleLogin = async () => {
     try {
@@ -24,15 +29,15 @@ export default function LoginForm() {
       const data: LoginResponse = await response.json();
 
       if (data.success) {
-          setMessage(`Logged in with email: ${data.user?.email}! \n 
-          Token: ${data.user?.token}`);
-          setTimeout(() => {router.push('/')}, 2000)
+        setMessage(`Logged in with email: ${data.user?.email}!`);
+        setTimeout(() => {router.push('/')}, 2000)
       }
       else {
         setMessage(data.message ?? "Login failed")
       }
     } catch (err) {
-        setMessage("Something went wrong");
+        console.log(err);
+        setMessage(` Something went wrong`);
     }
   };
 
@@ -44,9 +49,10 @@ export default function LoginForm() {
       
       <label htmlFor="password">Password</label>
       <Password id="password" type="password" toggleMask value={password} onChange={(e) => 
-        setPassword(e.target.value)} feedback={false} />
+        setPassword(e.target.value)} feedback={false} required/>
 
-      <Button label="Login" className="p-button-primary w-full" onClick={handleLogin}/>
+      <Button label="Login" className="p-button-primary w-full" 
+      onClick={handleLogin} disabled={!isFormValid}/>
 
       {/* TODO: Implement Reset page with proper routing as Login page above. */}
       <Link href="/reset" passHref>
