@@ -16,6 +16,6 @@ export default function SideNav() {
   ];
 
   return (
-    <Menu model={items} />
+    <Menu model={items} className='h-full max-w-64 shadow-lg rounded-sm'/>
   );
 }

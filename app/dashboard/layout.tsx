@@ -4,6 +4,7 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import SideNav from "@/app/ui/component/Dashboard/SideNav";
+import Header from "@//app/ui/component/Dashboard/Header";
 
 
 export const metadata: Metadata = {
@@ -17,14 +18,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-screen flex-col md:flex-row">
-      {/* NOTE: SideNavbar will always be present*/}
-      <div className="fixed left-0 top-0 h-screen w-auto bg-white shadow-lg rounded-sm">
-        <SideNav />
+    <div className="flex h-screen flex-col">
+
+      <div>
+        {/* NOTE: Header and SideNavbar will always be present*/}
+        <div className="fixed left-0 top-0 w-full z-50">
+          <Header />
+        </div>
+
+        <div className="fixed w-64 left-0 top-16 h-full z-40" >
+          <SideNav />
+        </div>
       </div>
-      <div className="grow md:ml-auto p-6 md:p-12 overflow-y-auto">
-          {children}
-      </div>
+
+      <main className="ml-64 pt-20 px-6 md:px-12 overflow-y-auto flex-1">
+        {children}
+      </main>
     </div>
   );
 }
