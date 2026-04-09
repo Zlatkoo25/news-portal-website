@@ -3,8 +3,8 @@ import "@/app/ui/globals.css";
 import 'primereact/resources/themes/saga-blue/theme.css'; 
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import SideNav from "@/app/ui/component/Dashboard/SideNav";
-import Header from "@//app/ui/component/Dashboard/Header";
+import SideNav from "@/app/ui/component/Common/SideNav";
+import Header from "@/app/ui/component/Common/Header";
 
 
 export const metadata: Metadata = {
