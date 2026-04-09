@@ -25,3 +25,12 @@ export interface MockUser {
   password: string;
   token: string;
 }
+
+export interface TableProps {
+  products: {
+    code: string;
+    name: string;
+    category: string;
+    quantity: number;
+  }[];
+}
