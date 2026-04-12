@@ -18,22 +18,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen w-screen flex-col">
 
-      <div>
-        {/* NOTE: Header and SideNavbar will always be present*/}
-        <div className="fixed left-0 top-0 w-full z-50">
-          <Header />
-        </div>
+      {/* NOTE: Header and SideNavbar will always be present*/}
+      <Header />
 
-        <div className="fixed w-64 left-0 top-16 h-full z-40" >
-          <SideNav />
-        </div>
+      <div className="flex flex-1 overflow-hidden" >
+        <SideNav />
+
+        <main className="overflow-y-auto flex-1 p-6">
+          {children}
+        </main>
       </div>
-
-      <main className="ml-64 pt-20 px-6 md:px-12 overflow-y-auto flex-1">
-        {children}
-      </main>
     </div>
   );
 }
