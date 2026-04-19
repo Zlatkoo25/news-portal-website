@@ -10,7 +10,7 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
         const imageUrl =
           article.images.length > 0
             ? article.images[0].file_path
-            : "/placeholder.jpg";
+            : "http://localhost:3002/uploads/placeholder.jpg";
 
         const header = (
           <div style={{ position: "relative", width: "100%", height: "200px" }}>
@@ -19,6 +19,8 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
               alt={article.title}
               fill
               style={{ objectFit: "cover" }}
+              // NOTE: Leave unoptimized on in development. Otherwise, images get blocked 
+              unoptimized 
             />
           </div>
         );
