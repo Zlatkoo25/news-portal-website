@@ -26,11 +26,31 @@ export interface MockUser {
   token: string;
 }
 
-export interface TableProps {
-  products: {
-    code: string;
-    name: string;
-    category: string;
-    quantity: number;
-  }[];
+
+// News type definitions
+export interface Author {
+  id: number;
+  first_name: string;
+  last_name: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface ArticleImage {
+  id: number;
+  file_path: string;
+}
+
+export interface Article {
+  id: number;
+  title: string;
+  content: string;
+  excerpt?: string;
+  created_at: string;
+  author: Author;
+  categories: Category[];
+  images: ArticleImage[];
 }
