@@ -6,7 +6,7 @@ import { Password } from "primereact/password";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LoginResponse } from "@/app/lib/definitions";
+import { login } from "@/app/lib/api/auth";
 import { isValidPassword } from "@/app/lib/utils";
 
 export default function LoginForm() {
@@ -15,52 +15,54 @@ export default function LoginForm() {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  // NOTE: Preliminary basic frontend button enable/disable input validation flag 
-  const isFormValid = email.trim() !== "" && 
-  isValidPassword(password);
+  const isFormValid = email.trim() !== "" && isValidPassword(password);
 
   const handleLogin = async () => {
     try {
-      const response = await fetch ("/api/mockLogin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data: LoginResponse = await response.json();
+      const data = await login(email, password);
 
-      if (data.success) {
-        setMessage(`Logged in with email: ${data.user?.email}!`);
-        setTimeout(() => {router.push('/dashboard')}, 2000)
-      }
-      else {
-        setMessage(data.message ?? "Login failed")
+      if (data.access_token) {
+        // TODO: store JWT in LOCALSTORAGE. Change to Redux Toolkit soon.
+        localStorage.setItem("token", data.access_token); 
+        setMessage(`Logged in with email: ${email}!`);
+        setTimeout(() => router.push("/dashboard"), 2000);
+      } else {
+        setMessage("Login failed");
       }
     } catch (err) {
-        console.log(err);
-        setMessage(` Something went wrong`);
+      console.error(err);
+      setMessage("Something went wrong");
     }
   };
 
   return (
     <div className="flex flex-col gap-3 max-w-sm mx-auto mb-10 mt-5 p-2 pb-0.5">
-      
       <label htmlFor="email">Email</label>
-      <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-      
+      <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
       <label htmlFor="password">Password</label>
-      <Password id="password" type="password" toggleMask value={password} onChange={(e) => 
-        setPassword(e.target.value)} feedback={false} required/>
+      <Password
+        id="password"
+        type="password"
+        toggleMask
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        feedback={false}
+        required
+      />
 
-      <Button label="Login" className="p-button-primary w-full" 
-      onClick={handleLogin} disabled={!isFormValid}/>
+      <Button
+        label="Login"
+        className="p-button-primary w-full"
+        onClick={handleLogin}
+        disabled={!isFormValid}
+      />
 
-      {/* TODO: Implement Reset page with proper routing as Login page above. */}
       <Link href="/reset" passHref>
-          <Button label="Reset" className="p-button-secondary w-full" />
+        <Button label="Reset" className="p-button-secondary w-full" />
       </Link>
 
-      {message? <p>{message}</p> : null}
-
+      {message ? <p>{message}</p> : null}
     </div>
   );
 }
