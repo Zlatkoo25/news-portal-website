@@ -4,7 +4,7 @@ import LoginForm from "@/app/ui/component/Authentication/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center">
+    <div className="items-center">
       <LoginForm/>
     </div>
   );

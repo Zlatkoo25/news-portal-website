@@ -36,32 +36,37 @@ export default function LoginForm() {
 
   return (
     <div className="flex flex-col gap-3 max-w-sm mx-auto mb-10 mt-5 p-2 pb-0.5">
-      <label htmlFor="email">Email</label>
-      <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <div className="flex flex-col gap-3">
+        <label htmlFor="email">Email</label>
+        <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-      <label htmlFor="password">Password</label>
-      <Password
-        id="password"
-        type="password"
-        toggleMask
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        feedback={false}
-        required
-      />
+        <label htmlFor="password">Password</label>
+        <Password
+          id="password"
+          type="password"
+          toggleMask
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          feedback={false}
+          required
+        />
 
-      <Button
-        label="Login"
-        className="p-button-primary w-full"
-        onClick={handleLogin}
-        disabled={!isFormValid}
-      />
+        <Button
+          label="Login"
+          className="p-button-primary w-full"
+          onClick={handleLogin}
+          disabled={!isFormValid}
+        />
 
-      <Link href="/reset" passHref>
-        <Button label="Reset" className="p-button-secondary w-full" />
-      </Link>
+        <Link href="/reset" passHref>
+          <Button label="Reset" className="p-button-secondary w-full" />
+        </Link>
+      </div>
 
-      {message ? <p>{message}</p> : null}
+      <div className="overflow-hidden w-full min-w-0">
+        {/* {message ? <p>{message}</p> : null} */}
+        <p>INVALID TEXT </p>
+      </div>
     </div>
   );
 }
