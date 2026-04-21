@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   IsString,
   IsNotEmpty,
@@ -28,4 +27,3 @@ export class CreateArticleDto {
   @IsOptional()
   categories?: number[]; // array of category IDs
 }
-/* eslint-enable @typescript-eslint/no-unsafe-call */

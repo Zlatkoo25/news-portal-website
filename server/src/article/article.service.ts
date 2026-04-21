@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
+import { ArticleResponseDto } from './dto/single-response-article.dto';
 
 @Injectable()
 export class ArticleService {
@@ -16,35 +13,43 @@ export class ArticleService {
     private readonly articleRepository: Repository<Article>,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto) {
-    if (!createArticleDto.author_id) {
-      throw new BadRequestException('Author ID is required');
-    }
-
-    const article = this.articleRepository.create({
-      title: createArticleDto.title,
-      content: createArticleDto.content,
-      excerpt: createArticleDto.excerpt,
-      author: { id: createArticleDto.author_id },
-      categories: createArticleDto.categories?.map((id) => ({ id })),
-    });
-
-    return await this.articleRepository.save(article);
+  private toResponseDto(article: Article) {
+    return {
+      id: article.id,
+      title: article.title,
+      content: article.content,
+      excerpt: article.excerpt,
+      author: article.author,
+      categories: article.categories,
+      images: article.images,
+    };
   }
 
-  async findAll() {
+  async create(dto: CreateArticleDto): Promise<ArticleResponseDto> {
+    const article = this.articleRepository.create({
+      title: dto.title,
+      content: dto.content,
+      excerpt: dto.excerpt,
+      author: { id: dto.author_id },
+      categories: dto.categories?.map((id) => ({ id })),
+    });
+
+    const saved = await this.articleRepository.save(article);
+
+    const fullArticle = await this.findOne(saved.id);
+
+    return fullArticle;
+  }
+
+  async findAll(): Promise<ArticleResponseDto[]> {
     const articles = await this.articleRepository.find({
       relations: ['author', 'images', 'categories'],
     });
 
-    if (!articles.length) {
-      throw new NotFoundException('No articles found');
-    }
-
-    return articles;
+    return articles.map((article) => this.toResponseDto(article));
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<ArticleResponseDto> {
     const article = await this.articleRepository.findOne({
       where: { id },
       relations: ['author', 'images', 'categories'],
@@ -53,7 +58,8 @@ export class ArticleService {
     if (!article) {
       throw new NotFoundException(`Article with id ${id} not found`);
     }
-    return article;
+
+    return this.toResponseDto(article);
   }
 
   async update(id: number, updateArticleDto: UpdateArticleDto) {
@@ -72,8 +78,15 @@ export class ArticleService {
     return await this.articleRepository.save(article);
   }
 
-  async remove(id: number) {
-    const article = await this.findOne(id);
-    return await this.articleRepository.remove(article);
+  async remove(id: number): Promise<void> {
+    const article = await this.articleRepository.findOne({
+      where: { id },
+    });
+
+    if (!article) {
+      throw new NotFoundException(`Article with id ${id} not found`);
+    }
+
+    await this.articleRepository.remove(article);
   }
 }

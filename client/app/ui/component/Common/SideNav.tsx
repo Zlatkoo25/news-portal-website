@@ -3,7 +3,7 @@ import { Menu } from 'primereact/menu';
 export default function SideNav() {
   // NOTE: Contents of sidenavbar
   const items = [
-    { label: 'Dashboard', icon: 'pi pi-home', url: '/dashboard' },
+    { label: 'Homepage', icon: 'pi pi-home', url: '/' },
     // { label: 'Settings', icon: 'pi pi-cog', url: '/settings' },
     { label: 'External', icon: 'pi pi-external-link', url: 'https://react.dev/' },
     // TODO: Logged-in user info

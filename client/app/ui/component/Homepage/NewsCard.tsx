@@ -1,9 +1,14 @@
+'use client';
+
 import Image from "next/image";
 import { Card } from "primereact/card";
 import { Tag } from "primereact/tag";
+import { useRouter } from "next/navigation";
 import { Article } from "@/app/lib/definitions";
 
 export default function ArticleCards({ articles }: { articles: Article[] }) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-wrap gap-6">
       {articles.map((article) => {
@@ -13,38 +18,26 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
             : "http://localhost:3002/uploads/placeholder.jpg";
 
         const header = (
-          <div style={{ position: "relative", width: "100%", height: "200px" }}>
+          <div className="relative w-full h-50">
             <Image
               src={imageUrl}
               alt={article.title}
               fill
               style={{ objectFit: "cover" }}
-              // NOTE: Leave unoptimized on in development. Otherwise, images get blocked 
-              unoptimized 
+              unoptimized
             />
           </div>
         );
 
         const footer = (
-          <div className="flex flex-col gap-2 text-gray-600">
-            <small>
-              <i className="pi pi-user mr-1" /> 
-              {article.author.first_name} {article.author.last_name}
-            </small>
+          <div className="flex justify-between items-center">
             <div className="flex flex-wrap gap-2">
-              {article.categories.length > 0 ? (
-                article.categories.map((c) => (
-                  <Tag
-                    key={c.id}
-                    value={c.name}
-                    icon="pi pi-tag"
-                    severity="info"
-                  />
-                ))
-              ) : (
-                <Tag value="No categories" severity="warning" />
-              )}
+              {article.categories.map((c) => (
+                <Tag key={c.id} value={c.name} icon="pi pi-tag" />
+              ))}
             </div>
+
+            <i className="pi pi-arrow-right text-gray-500"></i>
           </div>
         );
 
@@ -55,7 +48,8 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
             subTitle={article.excerpt}
             header={header}
             footer={footer}
-            className="w-96 shadow-md"
+            className="w-96 shadow-md cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
+            onClick={() => router.push(`/${article.id}`)}
           />
         );
       })}

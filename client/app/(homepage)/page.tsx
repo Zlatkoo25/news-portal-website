@@ -2,7 +2,7 @@
 
 // import Table from "@/app/ui/component/Dashboard/Table";
 import { useState, useEffect } from "react";
-import NewsCard from "../ui/component/Homepage/NewsCard";
+import NewsCard from "@/app/ui/component/Homepage/NewsCard";
 
 export default function Home() {
 
