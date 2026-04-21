@@ -4,7 +4,7 @@ export type Default = {
     field: string;
 };
 
-// Login API interfaces
+// Login API definitions
 
 export interface LoginRequest {
   email: string;
@@ -27,7 +27,7 @@ export interface MockUser {
 }
 
 
-// News type definitions
+// News definitions
 export interface Author {
   id: number;
   first_name: string;
@@ -53,4 +53,24 @@ export interface Article {
   author: Author;
   categories: Category[];
   images: ArticleImage[];
+}
+
+export interface User {
+  userId: number;
+  username: string;
+  email: string;
+  password: string;
+}
+
+// User Profile definitions
+
+export interface ProfileFormProps {
+  initialName: string;
+  onSave: (name: string) => Promise<void>;
+}
+
+export interface UpdateProfileDto {
+  name?: string;
+  email?: string;
+  password?: string;
 }

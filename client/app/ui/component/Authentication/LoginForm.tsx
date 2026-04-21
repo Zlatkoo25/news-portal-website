@@ -25,7 +25,7 @@ export default function LoginForm() {
         // TODO: store JWT in LOCALSTORAGE. Change to Redux Toolkit soon.
         localStorage.setItem("token", data.access_token); 
         setMessage(`Logged in with email: ${email}!`);
-        setTimeout(() => router.push("/dashboard"), 2000);
+        setTimeout(() => router.push("/"), 2000);
       } else {
         setMessage("Login failed");
       }
