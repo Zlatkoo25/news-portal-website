@@ -30,8 +30,7 @@ export default function LoginForm() {
         setMessage("Login failed");
       }
     } catch (err) {
-      console.error(err);
-      setMessage("Something went wrong");
+      setMessage((err as Error).message || "Something went wrong");
     }
   };
 

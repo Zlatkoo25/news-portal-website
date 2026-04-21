@@ -5,11 +5,15 @@ export async function login(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error('Login failed');
+    throw new Error(data.message || 'Login failed');
   }
+
   console.log("Logging in was a success!");
-  return res.json();
+
+  return data;
 }
 
 // TODO: Change localStorage with Redux Toolkit
@@ -23,9 +27,11 @@ export async function fetchWithAuth(url: string) {
     },
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error("Request failed");
+    throw new Error(data.message || "Request failed");
   }
 
-  return res.json();
+  return data;
 }
