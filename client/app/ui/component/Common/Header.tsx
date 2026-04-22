@@ -21,7 +21,7 @@ export default function Header() {
 
   const rightContents = (
     <div className="flex items-center gap-2">
-      <Button icon="pi pi-bell" className="p-button-rounded p-button-text" />
+      {/* <Button icon="pi pi-bell" className="p-button-rounded p-button-text" /> */}
 
       <Link href="/profile" passHref>
         <Button icon="pi pi-user" label="Profile" className="p-button-text" />

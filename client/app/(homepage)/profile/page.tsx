@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "primereact/card";
-import { fetchProfile, updateProfile } from "../lib/api/userProfile";
-import ProfileForm from "../ui/component/User/ProfileForm";
-import { User } from "../lib/definitions";
+import { fetchProfile, updateProfile } from "../../lib/api/userProfile";
+import ProfileForm from "../../ui/component/User/ProfileForm";
+import { User } from "../../lib/definitions";
 
 export default function ProfilePage() {
   const router = useRouter();
