@@ -32,6 +32,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get('profile')
   findProfile(@Req() req: AuthenticatedRequest) {
+    console.log('GET userId:', req.user.userId);
     return this.usersService.findById(req.user.userId);
   }
 
@@ -40,18 +41,19 @@ export class UsersController {
     return this.usersService.findById(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
   @UseGuards(AuthGuard)
   @Patch('profile')
   async updateProfile(
     @Req() req: AuthenticatedRequest,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    console.log('PATCH userId:', req.user.userId);
     return this.usersService.update(req.user.userId, updateUserDto);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')

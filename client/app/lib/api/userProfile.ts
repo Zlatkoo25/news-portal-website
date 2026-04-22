@@ -10,13 +10,17 @@ export async function fetchProfile(token: string) {
 
 export async function updateProfile(token: string, data: UpdateProfileDto) {
   const res = await fetch("http://localhost:3002/api/v1/users/profile", {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Update failed");
+
+  if (!res.ok) {
+    throw new Error("Update failed");
+  }
+
   return res.json();
 }

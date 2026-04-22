@@ -56,7 +56,7 @@ export interface Article {
 }
 
 export interface User {
-  userId: number;
+  id: number;
   username: string;
   email: string;
   password: string;
@@ -70,7 +70,7 @@ export interface ProfileFormProps {
 }
 
 export interface UpdateProfileDto {
-  name?: string;
+  username?: string;
   email?: string;
   password?: string;
 }
