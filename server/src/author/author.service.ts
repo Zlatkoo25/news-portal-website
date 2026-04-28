@@ -21,10 +21,6 @@ export class AuthorService {
   async findAll() {
     const authors = await this.authorRepository.find();
 
-    if (!authors.length) {
-      throw new NotFoundException('No authors found');
-    }
-
     return authors;
   }
 
@@ -52,11 +48,6 @@ export class AuthorService {
 
   async remove(id: number) {
     const author = await this.findOne(id);
-
-    // // NOTE: findOne(id) method already checks if object exists or not
-    // if (!author) {
-    //   throw new NotFoundException();
-    // }
 
     return await this.authorRepository.remove(author);
   }

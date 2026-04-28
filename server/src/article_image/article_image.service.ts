@@ -34,10 +34,6 @@ export class ArticleImageService {
       relations: ['article'],
     });
 
-    if (!images.length) {
-      throw new NotFoundException('No article images found');
-    }
-
     return images;
   }
 
