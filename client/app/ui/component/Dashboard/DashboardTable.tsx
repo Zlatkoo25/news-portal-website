@@ -1,7 +1,7 @@
 "use client";
 
-import { createArticle, deleteArticle, updateArticle } from "@/app/lib/api/article";
-import { Article } from "@/app/lib/definitions";
+import { articleApi } from "@/app/lib/api/article";
+import { Article, CreateArticleDto, UpdateArticleDto } from "@/app/lib/definitions";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
@@ -23,64 +23,60 @@ export default function DashboardTable({ articles }: { articles: Article[] }) {
     setData(articles);
   }, [articles]);
 
-  const handleCreate = async (formData: {
-  title: string;
-  content: string;
-  excerpt?: string;
-  author_id: number;
-  categories?: number[];
-  }) => {
+  const handleCreate = async (formData: CreateArticleDto) => {
     try {
-      const newArticle = await createArticle(formData);
+      const newArticle = await articleApi.create(formData);
       setData((prev) => [...prev, newArticle]);
       setCreateVisible(false);
       toast.current?.show({
-      severity: "success",
-      summary: "Article Created",
-      detail: `Title: ${newArticle.title}`,
+        severity: "success",
+        summary: "Article Created",
+        detail: `Title: ${newArticle.title}`,
       });
     } catch (err: unknown) {
-    
-    // HACK: Used ai for resolving this error msg :/
-    let message = "Unknown error";
-    if (err instanceof Error) {
-      message = err.message;
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.current?.show({
+        severity: "error",
+        summary: "Create Failed",
+        detail: message,
+      });
     }
-    toast.current?.show({
-      severity: "error",
-      summary: "Create Failed",
-      detail: message,
-    });
-    }
-
-    };
+  };
 
   const handleEdit = (article: Article) => {
     setSelectedArticle(article);
     setVisible(true);
   };
 
-  const handleSave = async (formData: Partial<Article>) => {
+  const handleSave = async (formData: UpdateArticleDto) => {
     if (!selectedArticle) return;
     try {
-      const updated = await updateArticle(selectedArticle.id.toString(), formData);
+      const updated = await articleApi.update(selectedArticle.id, formData);
       setData((prev) =>
         prev.map((a) => (a.id === selectedArticle.id ? { ...a, ...updated } : a))
       );
       setVisible(false);
-      console.log("Updated:", updated);
     } catch (err) {
-      console.error(err);
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.current?.show({
+        severity: "error",
+        summary: "Update Failed",
+        detail: message,
+      });
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteArticle(id.toString());
+      await articleApi.delete(id);
       setData((prev) => prev.filter((a) => a.id !== id));
-      console.log("Deleted:", id);
     } catch (err) {
-      console.error(err);
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast.current?.show({
+        severity: "error",
+        summary: "Delete Failed",
+        detail: message,
+      });
     }
   };
 
@@ -116,10 +112,10 @@ export default function DashboardTable({ articles }: { articles: Article[] }) {
         <Column
           header="Categories"
           body={(rowData: Article) =>
-            rowData.categories.map((c) => c.name).join(", ")
+            rowData.categories?.map((c) => c.name).join(", ") ?? "—"
           }
         />
-        <Column field="created_at" header="Created at" />
+        <Column field="created_at" header="Created At" />
         <Column
           header="Actions"
           body={(rowData: Article) => (
@@ -150,6 +146,7 @@ export default function DashboardTable({ articles }: { articles: Article[] }) {
       >
         <ArticleCreateForm onSave={handleCreate} />
       </Dialog>
+
       <Toast ref={toast} />
     </>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+// TODO: Refactored API calls, and removed MockAPI routes. It broke.
+
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";

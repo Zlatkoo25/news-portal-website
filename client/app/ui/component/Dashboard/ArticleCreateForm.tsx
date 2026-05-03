@@ -5,17 +5,10 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
-import { ArticleImage } from "@/app/lib/definitions";
+import { CreateArticleDto } from "@/app/lib/definitions";
 
 type Props = {
-  onSave: (data: {
-    title: string;
-    content: string;
-    excerpt?: string;
-    author_id: number;
-    categories?: number[];
-    images?: ArticleImage[];
-  }) => Promise<void>;
+  onSave: (data: CreateArticleDto) => Promise<void>;
 };
 
 export default function ArticleCreateForm({ onSave }: Props) {
@@ -25,7 +18,6 @@ export default function ArticleCreateForm({ onSave }: Props) {
   const [authorId, setAuthorId] = useState<number | null>(null);
   const [categories, setCategories] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<ArticleImage[]>([]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -38,15 +30,12 @@ export default function ArticleCreateForm({ onSave }: Props) {
         categories: categories
           ? categories.split(",").map((id) => parseInt(id.trim()))
           : undefined,
-        images,
       });
-      // NOTE: This will reset the form fields if saving fails
       setTitle("");
       setContent("");
       setExcerpt("");
-      setAuthorId(0);
+      setAuthorId(null);
       setCategories("");
-      setImages([]);
     } finally {
       setLoading(false);
     }
@@ -67,12 +56,18 @@ export default function ArticleCreateForm({ onSave }: Props) {
 
         <div className="field mt-3">
           <label>Content</label>
-          <InputText value={content} onChange={(e) => setContent(e.target.value)} />
+          <InputText
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
         </div>
 
         <div className="field mt-3">
           <label>Excerpt</label>
-          <InputText value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
+          <InputText
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+          />
         </div>
 
         <div className="field mt-3">
@@ -90,6 +85,7 @@ export default function ArticleCreateForm({ onSave }: Props) {
           <InputText
             value={categories}
             onChange={(e) => setCategories(e.target.value)}
+            placeholder="e.g. 1, 2, 3"
           />
         </div>
 
@@ -102,14 +98,10 @@ export default function ArticleCreateForm({ onSave }: Props) {
             maxFileSize={2000000}
             auto
             onUpload={(e) => {
-              const response = e.xhr.response ? JSON.parse(e.xhr.response) : null;
-              if (response?.url) {
-                setImages(response.url);
-              }
+              console.log("Image uploaded:", e.xhr.response);
             }}
           />
         </div>
-
 
         <Button
           label="Create Article"

@@ -15,7 +15,7 @@ export default function Header() {
 
   const leftContents = (
     <div className="flex items-center gap-3">
-      <h1 className="text-xl font-semibold">Dashboard</h1>
+      <h1 className="text-xl font-semibold">Daily News</h1>
     </div>
   );
 

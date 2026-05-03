@@ -3,23 +3,37 @@
 import { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { Article } from "@/app/lib/definitions";
+import { Article, UpdateArticleDto } from "@/app/lib/definitions";
 
 type Props = {
   article: Article;
-  onSave: (data: Partial<Article>) => Promise<void>;
+  onSave: (data: UpdateArticleDto) => Promise<void>;
 };
 
 export default function ArticleEditForm({ article, onSave }: Props) {
   const [title, setTitle] = useState(article.title);
-  const [excerpt, setExcerpt] = useState(article.excerpt);
+  const [excerpt, setExcerpt] = useState(article.excerpt ?? "");
   const [content, setContent] = useState(article.content);
+  const [authorId, setAuthorId] = useState<string>(
+    article.author ? String(article.author.id) : ""
+  );
+  const [categories, setCategories] = useState<string>(
+    article.categories?.map((c) => c.id).join(", ") ?? ""
+  );
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      await onSave({ title, excerpt, content });
+      await onSave({
+        title,
+        excerpt,
+        content,
+        author_id: authorId ? parseInt(authorId) : undefined,
+        categories: categories
+          ? categories.split(",").map((id) => parseInt(id.trim()))
+          : undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -40,12 +54,36 @@ export default function ArticleEditForm({ article, onSave }: Props) {
 
         <div className="field mt-3">
           <label>Excerpt</label>
-          <InputText value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
+          <InputText
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+          />
+        </div>
+
+        <div className="field mt-3">
+          <label>Content</label>
+          <InputText
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </div>
+
+        <div className="field mt-3">
+          <label>Author ID</label>
+          <InputText
+            value={authorId}
+            onChange={(e) => setAuthorId(e.target.value)}
+            placeholder="e.g. 1"
+          />
         </div>
 
         <div className="field mt-3 mb-4">
-          <label>Content</label>
-          <InputText value={content} onChange={(e) => setContent(e.target.value)} />
+          <label>Categories (comma-separated IDs)</label>
+          <InputText
+            value={categories}
+            onChange={(e) => setCategories(e.target.value)}
+            placeholder="e.g. 1, 2, 3"
+          />
         </div>
 
         <Button

@@ -1,4 +1,4 @@
-import { getArticle } from "@/app/lib/api/article";
+import { articleApi } from "@/app/lib/api/article";
 import ArticleDetails from "@/app/ui/component/Article/ArticleDetails";
 
 export default async function Page(
@@ -6,7 +6,7 @@ export default async function Page(
 ) {
   const { id } = await params;
 
-  const article = await getArticle(id);
+  const article = await articleApi.getOne(id);
 
   return <ArticleDetails article={article} />;
 }
