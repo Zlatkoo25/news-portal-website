@@ -15,7 +15,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="min-h-screen px-16 flex flex-col gap-4 w-full">
       <p className="text-black font-bold text-4xl">News</p>
       {/* <Table articles={articles} /> */}
       <NewsCard articles={articles} />

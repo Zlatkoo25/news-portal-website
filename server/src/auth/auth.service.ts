@@ -31,10 +31,10 @@ export class AuthService {
       email: user.email,
     };
 
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     return {
-      access_token: token,
+      access_token: accessToken,
       user: {
         id: user.id,
         username: user.username,

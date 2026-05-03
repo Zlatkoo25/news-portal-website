@@ -1,4 +1,4 @@
-import { getArticle } from "@/app/lib/utils";
+import { getArticle } from "@/app/lib/api/article";
 import ArticleDetails from "@/app/ui/component/Article/ArticleDetails";
 
 export default async function Page(

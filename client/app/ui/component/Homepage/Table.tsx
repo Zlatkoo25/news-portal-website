@@ -20,6 +20,7 @@ export default function Table({ articles }: { articles: Article[] }) {
             rowData.categories.map((c) => c.name).join(", ")
           }
         />
+        <Column field="created_at" header="Created at" />
       </DataTable>
     </div>
   );

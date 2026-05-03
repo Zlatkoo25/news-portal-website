@@ -5,7 +5,7 @@ export default function SideNav() {
   const items = [
     { label: 'Homepage', icon: 'pi pi-home', url: '/' },
     // { label: 'Settings', icon: 'pi pi-cog', url: '/settings' },
-    { label: 'External', icon: 'pi pi-external-link', url: 'https://react.dev/' },
+    { label: 'Dashboard', icon: 'pi pi-list', url: '/dashboard' },
     // TODO: Logged-in user info
     // TODO: Logout button
 
