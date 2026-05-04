@@ -36,6 +36,18 @@ export interface ProfileFormProps {
   onSave: (name: string) => Promise<void>;
 }
 
+export interface CreateUserDto {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateUserDto {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
 // Articles
 export interface Author {
   id: number;
@@ -74,3 +86,20 @@ export interface CreateArticleDto {
 }
 
 export type UpdateArticleDto = Partial<CreateArticleDto>
+
+// Author
+
+export interface CreateAuthorDto {
+  first_name: string;
+  last_name: string;
+}
+
+export type UpdateAuthorDto = Partial<CreateAuthorDto>
+
+// Category
+
+export interface CreateCategoryDto {
+  name: string;
+}
+
+export type UpdateCategoryDto = Partial<CreateCategoryDto>

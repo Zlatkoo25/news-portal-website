@@ -12,7 +12,7 @@ import ArticleCreateForm from "./ArticleCreateForm";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 
-export default function DashboardTable({ articles }: { articles: Article[] }) {
+export default function ArticlesDashboardTable({ articles }: { articles: Article[] }) {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<Article[]>(articles);
