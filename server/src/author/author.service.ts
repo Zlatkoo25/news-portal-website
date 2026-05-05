@@ -21,10 +21,6 @@ export class AuthorService {
   async findAll() {
     const authors = await this.authorRepository.find();
 
-    if (!authors.length) {
-      throw new NotFoundException('No authors found');
-    }
-
     return authors;
   }
 

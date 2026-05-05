@@ -25,5 +25,9 @@ export class CreateArticleDto {
 
   @IsArray()
   @IsOptional()
-  categories?: number[]; // array of category IDs
+  categories?: number[];
+
+  @IsArray()
+  @IsOptional()
+  images?: { id: number; file_path: string }[];
 }

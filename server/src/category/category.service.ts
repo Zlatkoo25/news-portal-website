@@ -21,10 +21,6 @@ export class CategoryService {
   async findAll() {
     const categories = await this.categoryRepository.find();
 
-    if (!categories.length) {
-      throw new NotFoundException('No categories found');
-    }
-
     return categories;
   }
 

@@ -68,4 +68,19 @@ export class UsersService {
 
     return await this.userRepository.remove(user);
   }
+
+  async findByIdWithRefreshToken(id: number): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.refresh_token')
+      .where('user.id = :id', { id })
+      .getOne();
+  }
+
+  async updateRefreshToken(
+    id: number,
+    hashedToken: string | null,
+  ): Promise<void> {
+    await this.userRepository.update(id, { refresh_token: hashedToken });
+  }
 }

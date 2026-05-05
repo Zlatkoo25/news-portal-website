@@ -15,4 +15,8 @@ export class User {
   @Exclude()
   @Column({ select: false })
   password!: string;
+
+  @Exclude()
+  @Column({ type: 'text', nullable: true, select: false })
+  refresh_token!: string | null;
 }

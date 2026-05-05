@@ -1,37 +1,13 @@
-export async function login(email: string, password: string) {
-  const res = await fetch('http://localhost:3002/api/v1/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
+import { apiClient } from './client';
+import { LoginRequest, LoginResponse, RefreshResponse } from '../definitions';
 
-  const data = await res.json();
+export const authApi = {
+  login: (data: LoginRequest): Promise<LoginResponse> =>
+    apiClient.post<LoginResponse>('/auth/login', data),
 
-  if (!res.ok) {
-    throw new Error(data.message || 'Login failed');
-  }
+  refresh: (refreshToken: string): Promise<RefreshResponse> =>
+    apiClient.postWithToken<RefreshResponse>('/auth/refresh', null, refreshToken),
 
-  console.log("Logging in was a success!");
-
-  return data;
-}
-
-// TODO: Change localStorage with Redux Toolkit
-export async function fetchWithAuth(url: string) {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No token found");
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.message || "Request failed");
-  }
-
-  return data;
-}
+  logout: (): Promise<void> =>
+    apiClient.authPost<void>('/auth/logout', null),
+};

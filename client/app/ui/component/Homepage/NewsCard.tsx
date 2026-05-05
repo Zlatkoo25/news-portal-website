@@ -25,6 +25,7 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
               fill
               style={{ objectFit: "cover" }}
               unoptimized
+              loading="eager"
             />
           </div>
         );
@@ -48,7 +49,7 @@ export default function ArticleCards({ articles }: { articles: Article[] }) {
             subTitle={article.excerpt}
             header={header}
             footer={footer}
-            className="w-96 shadow-md cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
+            className="w-108 shadow-md cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all"
             onClick={() => router.push(`/${article.id}`)}
           />
         );

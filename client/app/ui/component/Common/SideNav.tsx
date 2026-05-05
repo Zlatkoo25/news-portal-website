@@ -1,11 +1,19 @@
-import { Menu } from 'primereact/menu';
+// import { Menu } from 'primereact/menu';
+import { PanelMenu } from 'primereact/panelmenu';
 
 export default function SideNav() {
   // NOTE: Contents of sidenavbar
   const items = [
     { label: 'Homepage', icon: 'pi pi-home', url: '/' },
-    // { label: 'Settings', icon: 'pi pi-cog', url: '/settings' },
-    { label: 'External', icon: 'pi pi-external-link', url: 'https://react.dev/' },
+    {
+      label: 'Dashboard',
+      icon: 'pi pi-list',
+      items: [
+        { label: 'Articles', icon: 'pi pi-list', url: '/dashboard/articles' },
+        { label: 'Users', icon: 'pi pi-user', url: '/dashboard/users' },
+        // { label: 'Settings', icon: 'pi pi-cog', url: '/dashboard/settings' },
+      ],
+    },
     // TODO: Logged-in user info
     // TODO: Logout button
 
@@ -16,6 +24,6 @@ export default function SideNav() {
   ];
 
   return (
-    <Menu model={items} className='h-full max-w-64 shadow-lg rounded-sm'/>
+    <PanelMenu model={items} className='h-full max-w-64 shadow-lg rounded-sm'/>
   );
 }

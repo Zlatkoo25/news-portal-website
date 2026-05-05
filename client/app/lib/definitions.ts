@@ -1,33 +1,54 @@
-// NOTE: For defining and exporting types and interfaces
-
-export type Default = {
-    field: string;
-};
-
-// Login API definitions
-
+// Auth
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
 export interface LoginResponse {
-  success: boolean;
-  user?: {
-    email: string;
-    token: string;
+  access_token: string;
+  refresh_token: string;
+  user: {
+    id: number;
+    username: string;
   };
-  message?: string;
 }
 
-export interface MockUser {
+export interface RefreshResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
+// User
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export interface UpdateProfileDto {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
+export interface ProfileFormProps {
+  initialName: string;
+  onSave: (name: string) => Promise<void>;
+}
+
+export interface CreateUserDto {
+  username: string;
   email: string;
   password: string;
-  token: string;
 }
 
+export interface UpdateUserDto {
+  username?: string;
+  email?: string;
+  password?: string;
+}
 
-// News definitions
+// Articles
 export interface Author {
   id: number;
   first_name: string;
@@ -41,7 +62,8 @@ export interface Category {
 
 export interface ArticleImage {
   id: number;
-  file_path: string;
+  file_name: string;
+  storage_path: string;
 }
 
 export interface Article {
@@ -51,26 +73,33 @@ export interface Article {
   excerpt?: string;
   created_at: string;
   author: Author;
-  categories: Category[];
-  images: ArticleImage[];
+  categories?: Category[];
+  images?: ArticleImage[];
 }
 
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  password: string;
+export interface CreateArticleDto {
+  title: string;
+  content: string;
+  excerpt?: string;
+  author_id: number;
+  categories?: number[];
 }
 
-// User Profile definitions
+export type UpdateArticleDto = Partial<CreateArticleDto>
 
-export interface ProfileFormProps {
-  initialName: string;
-  onSave: (name: string) => Promise<void>;
+// Author
+
+export interface CreateAuthorDto {
+  first_name: string;
+  last_name: string;
 }
 
-export interface UpdateProfileDto {
-  username?: string;
-  email?: string;
-  password?: string;
+export type UpdateAuthorDto = Partial<CreateAuthorDto>
+
+// Category
+
+export interface CreateCategoryDto {
+  name: string;
 }
+
+export type UpdateCategoryDto = Partial<CreateCategoryDto>

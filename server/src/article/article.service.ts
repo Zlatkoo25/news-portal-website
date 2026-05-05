@@ -19,6 +19,7 @@ export class ArticleService {
       title: article.title,
       content: article.content,
       excerpt: article.excerpt,
+      created_at: article.created_at,
       author: article.author,
       categories: article.categories,
       images: article.images,
