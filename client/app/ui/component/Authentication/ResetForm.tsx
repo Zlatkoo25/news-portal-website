@@ -9,7 +9,7 @@ import Link from "next/link";
 import { LoginResponse } from "@/app/lib/definitions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { isValidPassword } from "@/app/lib/utils";
+import { isValidPassword } from "@/app/lib/utils/utils";
 
 export default function PasswordResetForm() {
   const [email, setEmail] = useState("");

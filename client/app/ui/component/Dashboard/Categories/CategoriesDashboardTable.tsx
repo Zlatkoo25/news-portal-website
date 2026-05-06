@@ -4,13 +4,19 @@ import { categoryApi } from "@/app/lib/api/category";
 import { Category, CreateCategoryDto, UpdateCategoryDto } from "@/app/lib/definitions";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { confirmDialog } from "primereact/confirmdialog";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import CategoryEditForm from "./CategoriesEditForm";
 import CategoryCreateForm from "./CategoryCreateForm";
+import CategoryEditForm from "./CategoriesEditForm";
+import {
+  getErrorMessage,
+  showSuccess,
+  showError,
+  confirmDeleteDialog,
+  ActionsBody,
+  DashboardDialog,
+  TableHeader,
+} from "@/app/lib/utils/dashboard";
 
 export default function CategoriesDashboardTable({ categories }: { categories: Category[] }) {
   const [data, setData] = useState<Category[]>(categories);
@@ -26,10 +32,9 @@ export default function CategoriesDashboardTable({ categories }: { categories: C
       const newCategory = await categoryApi.create(formData);
       setData((prev) => [...prev, newCategory]);
       setCreateVisible(false);
-      toast.current?.show({ severity: "success", summary: "Category Created", detail: newCategory.name });
+      showSuccess(toast, "Category Created", newCategory.name);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Create Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Create Failed");
     }
   };
 
@@ -39,10 +44,9 @@ export default function CategoriesDashboardTable({ categories }: { categories: C
       const updated = await categoryApi.update(selectedCategory.id, formData);
       setData((prev) => prev.map((c) => (c.id === selectedCategory.id ? { ...c, ...updated } : c)));
       setEditVisible(false);
-      toast.current?.show({ severity: "success", summary: "Category Updated", detail: updated.name });
+      showSuccess(toast, "Category Updated", updated.name);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Update Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Update Failed");
     }
   };
 
@@ -50,51 +54,66 @@ export default function CategoriesDashboardTable({ categories }: { categories: C
     try {
       await categoryApi.remove(id);
       setData((prev) => prev.filter((c) => c.id !== id));
-      toast.current?.show({ severity: "success", summary: "Category Deleted", detail: "Category removed successfully" });
+      showSuccess(toast, "Category Deleted", "Category removed successfully");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Delete Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Delete Failed");
     }
-  };
-
-  const confirmDelete = (id: number) => {
-    confirmDialog({
-      message: "Are you sure you want to delete this category?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => handleDelete(id),
-    });
   };
 
   return (
     <>
-      <div className="mb-3">
-        <Button label="New Category" icon="pi pi-plus" className="p-button-success" onClick={() => setCreateVisible(true)} />
-      </div>
+      <TableHeader
+        count={data.length}
+        entityName="categories"
+        createLabel="New Category"
+        onCreate={() => setCreateVisible(true)}
+      />
 
-      <DataTable value={data} paginator rows={5}>
-        <Column field="id" header="ID" />
+      <DataTable
+        value={data}
+        paginator
+        rows={8}
+        rowsPerPageOptions={[5, 8, 15]}
+        stripedRows
+        showGridlines
+        emptyMessage="No categories found"
+        className="text-sm"
+      >
+        <Column field="id" header="ID" style={{ width: "4rem" }} />
         <Column field="name" header="Name" />
         <Column
           header="Actions"
           body={(rowData: Category) => (
-            <div className="flex gap-2">
-              <button onClick={() => { setSelectedCategory(rowData); setEditVisible(true); }}>Edit</button>
-              <button onClick={() => confirmDelete(rowData.id)}>Delete</button>
-            </div>
+            <ActionsBody
+              onEdit={() => { setSelectedCategory(rowData); setEditVisible(true); }}
+              onDelete={() => confirmDeleteDialog("category", () => handleDelete(rowData.id))}
+              editTooltip="Edit category"
+              deleteTooltip="Delete category"
+            />
           )}
+          style={{ width: "8rem" }}
+          alignHeader="center"
+          align="center"
         />
       </DataTable>
 
-      <Dialog header="Edit Category" visible={editVisible} style={{ width: "40vw" }} onHide={() => setEditVisible(false)}>
+      <DashboardDialog
+        header="Edit Category"
+        visible={editVisible}
+        onHide={() => setEditVisible(false)}
+      >
         {selectedCategory && <CategoryEditForm category={selectedCategory} onSave={handleSave} />}
-      </Dialog>
+      </DashboardDialog>
 
-      <Dialog header="Create Category" visible={createVisible} style={{ width: "40vw" }} onHide={() => setCreateVisible(false)}>
+      <DashboardDialog
+        header="Create Category"
+        visible={createVisible}
+        onHide={() => setCreateVisible(false)}
+      >
         <CategoryCreateForm onSave={handleCreate} />
-      </Dialog>
+      </DashboardDialog>
 
-      <Toast ref={toast} />
+      <Toast ref={toast} position="bottom-right" />
     </>
   );
 }

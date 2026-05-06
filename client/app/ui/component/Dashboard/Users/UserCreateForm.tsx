@@ -1,9 +1,16 @@
+"use client";
+
 import { CreateUserDto } from "@/app/lib/definitions";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
 import { useState } from "react";
 
-export default function UserCreateForm({ onSave }: { onSave: (data: CreateUserDto) => Promise<void> }) {
+export default function UserCreateForm({
+  onSave,
+}: {
+  onSave: (data: CreateUserDto) => Promise<void>;
+}) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,25 +28,51 @@ export default function UserCreateForm({ onSave }: { onSave: (data: CreateUserDt
     }
   };
 
+  const isValid = username.trim() !== "" && email.trim() !== "" && password.trim() !== "";
+
   return (
-    <div className="p-fluid mt-4 flex flex-col gap-3">
-      <div className="field">
-        <label>Username</label>
-        <InputText value={username} onChange={(e) => setUsername(e.target.value)} />
+    <div className="flex flex-col gap-4 pt-2">
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Username</label>
+        <InputText
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="e.g. johndoe"
+          className="w-full"
+        />
       </div>
-      <div className="field">
-        <label>Email</label>
-        <InputText value={email} onChange={(e) => setEmail(e.target.value)} />
+
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Email</label>
+        <InputText
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="e.g. john@example.com"
+          keyfilter="email"
+          className="w-full"
+        />
       </div>
-      <div className="field">
-        <label>Password</label>
-        <InputText value={password} onChange={(e) => setPassword(e.target.value)} />
+
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">Password</label>
+        <Password
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Min. 8 characters"
+          toggleMask
+          feedback={false}
+          className="w-full"
+          pt={{ input: { className: "w-full" } }}
+        />
       </div>
+
       <Button
         label="Create User"
-        icon="pi pi-save"
+        icon="pi pi-user-plus"
         loading={loading}
+        disabled={!isValid}
         onClick={handleSave}
+        className="w-full mt-2"
       />
     </div>
   );

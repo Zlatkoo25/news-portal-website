@@ -4,13 +4,20 @@ import { authorApi } from "@/app/lib/api/author";
 import { Author, CreateAuthorDto, UpdateAuthorDto } from "@/app/lib/definitions";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { confirmDialog } from "primereact/confirmdialog";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
 import AuthorCreateForm from "./AuthorCreateForm";
 import AuthorEditForm from "./AuthorEditForm";
+import {
+  getErrorMessage,
+  showSuccess,
+  showError,
+  confirmDeleteDialog,
+  ActionsBody,
+  DashboardDialog,
+  TableHeader,
+  AvatarCell,
+} from "@/app/lib/utils/dashboard";
+import { Toast } from "primereact/toast";
 
 export default function AuthorsDashboardTable({ authors }: { authors: Author[] }) {
   const [data, setData] = useState<Author[]>(authors);
@@ -26,10 +33,9 @@ export default function AuthorsDashboardTable({ authors }: { authors: Author[] }
       const newAuthor = await authorApi.create(formData);
       setData((prev) => [...prev, newAuthor]);
       setCreateVisible(false);
-      toast.current?.show({ severity: "success", summary: "Author Created", detail: `${newAuthor.first_name} ${newAuthor.last_name}` });
+      showSuccess(toast, "Author Created", `${newAuthor.first_name} ${newAuthor.last_name}`);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Create Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Create Failed");
     }
   };
 
@@ -39,10 +45,9 @@ export default function AuthorsDashboardTable({ authors }: { authors: Author[] }
       const updated = await authorApi.update(selectedAuthor.id, formData);
       setData((prev) => prev.map((a) => (a.id === selectedAuthor.id ? { ...a, ...updated } : a)));
       setEditVisible(false);
-      toast.current?.show({ severity: "success", summary: "Author Updated", detail: `${updated.first_name} ${updated.last_name}` });
+      showSuccess(toast, "Author Updated", `${updated.first_name} ${updated.last_name}`);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Update Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Update Failed");
     }
   };
 
@@ -50,52 +55,70 @@ export default function AuthorsDashboardTable({ authors }: { authors: Author[] }
     try {
       await authorApi.remove(id);
       setData((prev) => prev.filter((a) => a.id !== id));
-      toast.current?.show({ severity: "success", summary: "Author Deleted", detail: "Author removed successfully" });
+      showSuccess(toast, "Author Deleted", "Author removed successfully");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Delete Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Delete Failed");
     }
-  };
-
-  const confirmDelete = (id: number) => {
-    confirmDialog({
-      message: "Are you sure you want to delete this author?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => handleDelete(id),
-    });
   };
 
   return (
     <>
-      <div className="mb-3">
-        <Button label="New Author" icon="pi pi-plus" className="p-button-success" onClick={() => setCreateVisible(true)} />
-      </div>
+      <TableHeader
+        count={data.length}
+        entityName="authors"
+        createLabel="New Author"
+        onCreate={() => setCreateVisible(true)}
+      />
 
-      <DataTable value={data} paginator rows={5}>
-        <Column field="id" header="ID" />
-        <Column field="first_name" header="First Name" />
+      <DataTable
+        value={data}
+        paginator
+        rows={8}
+        rowsPerPageOptions={[5, 8, 15]}
+        stripedRows
+        showGridlines
+        emptyMessage="No authors found"
+        className="text-sm"
+      >
+        <Column field="id" header="ID" style={{ width: "4rem" }} />
+        <Column
+          header="First Name"
+          body={(rowData: Author) => <AvatarCell name={rowData.first_name} />}
+        />
         <Column field="last_name" header="Last Name" />
         <Column
           header="Actions"
           body={(rowData: Author) => (
-            <div className="flex gap-2">
-              <button onClick={() => { setSelectedAuthor(rowData); setEditVisible(true); }}>Edit</button>
-              <button onClick={() => confirmDelete(rowData.id)}>Delete</button>
-            </div>
+            <ActionsBody
+              onEdit={() => { setSelectedAuthor(rowData); setEditVisible(true); }}
+              onDelete={() => confirmDeleteDialog("author", () => handleDelete(rowData.id))}
+              editTooltip="Edit author"
+              deleteTooltip="Delete author"
+            />
           )}
+          style={{ width: "8rem" }}
+          alignHeader="center"
+          align="center"
         />
       </DataTable>
 
-      <Dialog header="Edit Author" visible={editVisible} style={{ width: "40vw" }} onHide={() => setEditVisible(false)}>
+      <DashboardDialog
+        header="Edit Author"
+        visible={editVisible}
+        onHide={() => setEditVisible(false)}
+      >
         {selectedAuthor && <AuthorEditForm author={selectedAuthor} onSave={handleSave} />}
-      </Dialog>
+      </DashboardDialog>
 
-      <Dialog header="Create Author" visible={createVisible} style={{ width: "40vw" }} onHide={() => setCreateVisible(false)}>
+      <DashboardDialog
+        header="Create Author"
+        visible={createVisible}
+        onHide={() => setCreateVisible(false)}
+      >
         <AuthorCreateForm onSave={handleCreate} />
-      </Dialog>
+      </DashboardDialog>
 
-      <Toast ref={toast} />
+      <Toast ref={toast} position="bottom-right" />
     </>
   );
 }

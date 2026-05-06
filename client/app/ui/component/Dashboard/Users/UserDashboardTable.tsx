@@ -4,44 +4,39 @@ import { userApi } from "@/app/lib/api/user";
 import { User, CreateUserDto, UpdateUserDto } from "@/app/lib/definitions";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { confirmDialog } from "primereact/confirmdialog";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import UserCreateForm from "./UserCreateForm";
 import UserEditForm from "./UserEditForm";
+import {
+  getErrorMessage,
+  showSuccess,
+  showError,
+  confirmDeleteDialog,
+  ActionsBody,
+  DashboardDialog,
+  TableHeader,
+  AvatarCell,
+} from "@/app/lib/utils/dashboard";
 
 export default function UserDashboardTable({ users }: { users: User[] }) {
+  const [data, setData] = useState<User[]>(users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editVisible, setEditVisible] = useState(false);
   const [createVisible, setCreateVisible] = useState(false);
-  const [data, setData] = useState<User[]>(users);
   const toast = useRef<Toast>(null);
 
-  useEffect(() => {
-    setData(users);
-  }, [users]);
+  useEffect(() => { setData(users); }, [users]);
 
   const handleCreate = async (formData: CreateUserDto) => {
     try {
       const newUser = await userApi.create(formData);
       setData((prev) => [...prev, newUser]);
       setCreateVisible(false);
-      toast.current?.show({
-        severity: "success",
-        summary: "User Created",
-        detail: `${newUser.username} created successfully`,
-      });
+      showSuccess(toast, "User Created", `${newUser.username} has been added`);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Create Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Create Failed");
     }
-  };
-
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
-    setEditVisible(true);
   };
 
   const handleSave = async (formData: UpdateUserDto) => {
@@ -52,14 +47,9 @@ export default function UserDashboardTable({ users }: { users: User[] }) {
         prev.map((u) => (u.id === selectedUser.id ? { ...u, ...updated } : u))
       );
       setEditVisible(false);
-      toast.current?.show({
-        severity: "success",
-        summary: "User Updated",
-        detail: `${updated.username} updated successfully`,
-      });
+      showSuccess(toast, "User Updated", `${updated.username} has been updated`);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Update Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Update Failed");
     }
   };
 
@@ -67,73 +57,82 @@ export default function UserDashboardTable({ users }: { users: User[] }) {
     try {
       await userApi.remove(id);
       setData((prev) => prev.filter((u) => u.id !== id));
-      toast.current?.show({
-        severity: "success",
-        summary: "User Deleted",
-        detail: "User removed successfully",
-      });
+      showSuccess(toast, "User Deleted", "User has been removed");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({ severity: "error", summary: "Delete Failed", detail: message });
+      showError(toast, getErrorMessage(err), "Delete Failed");
     }
   };
 
-  const confirmDelete = (id: number) => {
-    confirmDialog({
-      message: "Are you sure you want to delete this user?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => handleDelete(id),
-    });
-  };
+  const emailBody = (rowData: User) => (
+    <div className="flex items-center gap-2 text-gray-600">
+      <i className="pi pi-envelope text-xs" />
+      <span>{rowData.email}</span>
+    </div>
+  );
 
   return (
     <>
-      <div className="mb-3">
-        <Button
-          label="New User"
-          icon="pi pi-plus"
-          className="p-button-success"
-          onClick={() => setCreateVisible(true)}
-        />
-      </div>
+      <TableHeader
+        count={data.length}
+        entityName="users"
+        createLabel="New User"
+        createIcon="pi pi-user-plus"
+        onCreate={() => setCreateVisible(true)}
+      />
 
-      <DataTable value={data} paginator rows={5}>
-        <Column field="id" header="ID" />
-        <Column field="username" header="Username" />
-        <Column field="email" header="Email" />
+      <DataTable
+        value={data}
+        paginator
+        rows={8}
+        rowsPerPageOptions={[5, 8, 15]}
+        stripedRows
+        showGridlines
+        emptyMessage="No users found"
+        className="text-sm"
+      >
+        <Column field="id" header="ID" style={{ width: "4rem" }} />
+        <Column
+          header="Username"
+          body={(rowData: User) => <AvatarCell name={rowData.username} />}
+        />
+        <Column header="Email" body={emailBody} />
         <Column
           header="Actions"
           body={(rowData: User) => (
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(rowData)}>Edit</button>
-              <button onClick={() => confirmDelete(rowData.id)}>Delete</button>
-            </div>
+            <ActionsBody
+              onEdit={() => { setSelectedUser(rowData); setEditVisible(true); }}
+              onDelete={() => confirmDeleteDialog("user", () => handleDelete(rowData.id))}
+              editTooltip="Edit user"
+              deleteTooltip="Delete user"
+            />
           )}
+          style={{ width: "8rem" }}
+          alignHeader="center"
+          align="center"
         />
       </DataTable>
 
-      <Dialog
+      <DashboardDialog
         header="Edit User"
         visible={editVisible}
-        style={{ width: "40vw" }}
         onHide={() => setEditVisible(false)}
+        width="36vw"
       >
         {selectedUser && (
           <UserEditForm user={selectedUser} onSave={handleSave} />
         )}
-      </Dialog>
+      </DashboardDialog>
 
-      <Dialog
-        header="Create User"
+      <DashboardDialog
+        header="Create New User"
         visible={createVisible}
-        style={{ width: "40vw" }}
         onHide={() => setCreateVisible(false)}
+        width="36vw"
       >
         <UserCreateForm onSave={handleCreate} />
-      </Dialog>
+      </DashboardDialog>
 
-      <Toast ref={toast} />
+      <Toast ref={toast} position="bottom-right" />
     </>
   );
 }

@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { Password } from "primereact/password";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { isValidPassword } from "@/app/lib/utils";
+import { isValidPassword } from "@/app/lib/utils/utils";
 import { authApi } from "@/app/lib/api/auth";
 import { LoginRequest } from "@/app/lib/definitions";
 

@@ -4,48 +4,38 @@ import { articleApi } from "@/app/lib/api/article";
 import { Article, CreateArticleDto, UpdateArticleDto } from "@/app/lib/definitions";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { Dialog } from "primereact/dialog";
-import { confirmDialog } from "primereact/confirmdialog";
 import { useState, useEffect, useRef } from "react";
+import { Toast } from "primereact/toast";
 import ArticleEditForm from "./ArticleEditForm";
 import ArticleCreateForm from "./ArticleCreateForm";
-import { Button } from "primereact/button";
-import { Toast } from "primereact/toast";
+import {
+  getErrorMessage,
+  showSuccess,
+  showError,
+  confirmDeleteDialog,
+  ActionsBody,
+  DashboardDialog,
+  TableHeader,
+} from "@/app/lib/utils/dashboard";
 
 export default function ArticlesDashboardTable({ articles }: { articles: Article[] }) {
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const [visible, setVisible] = useState(false);
   const [data, setData] = useState<Article[]>(articles);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [editVisible, setEditVisible] = useState(false);
   const [createVisible, setCreateVisible] = useState(false);
   const toast = useRef<Toast>(null);
 
-  useEffect(() => {
-    setData(articles);
-  }, [articles]);
+  useEffect(() => { setData(articles); }, [articles]);
 
   const handleCreate = async (formData: CreateArticleDto) => {
     try {
       const newArticle = await articleApi.create(formData);
       setData((prev) => [...prev, newArticle]);
       setCreateVisible(false);
-      toast.current?.show({
-        severity: "success",
-        summary: "Article Created",
-        detail: `Title: ${newArticle.title}`,
-      });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({
-        severity: "error",
-        summary: "Create Failed",
-        detail: message,
-      });
+      showSuccess(toast, "Article Created", newArticle.title);
+    } catch (err) {
+      showError(toast, getErrorMessage(err), "Create Failed");
     }
-  };
-
-  const handleEdit = (article: Article) => {
-    setSelectedArticle(article);
-    setVisible(true);
   };
 
   const handleSave = async (formData: UpdateArticleDto) => {
@@ -55,14 +45,10 @@ export default function ArticlesDashboardTable({ articles }: { articles: Article
       setData((prev) =>
         prev.map((a) => (a.id === selectedArticle.id ? { ...a, ...updated } : a))
       );
-      setVisible(false);
+      setEditVisible(false);
+      showSuccess(toast, "Article Updated", updated.title);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({
-        severity: "error",
-        summary: "Update Failed",
-        detail: message,
-      });
+      showError(toast, getErrorMessage(err), "Update Failed");
     }
   };
 
@@ -70,84 +56,88 @@ export default function ArticlesDashboardTable({ articles }: { articles: Article
     try {
       await articleApi.delete(id);
       setData((prev) => prev.filter((a) => a.id !== id));
+      showSuccess(toast, "Article Deleted", "Article removed successfully");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      toast.current?.show({
-        severity: "error",
-        summary: "Delete Failed",
-        detail: message,
-      });
+      showError(toast, getErrorMessage(err), "Delete Failed");
     }
   };
 
-  const confirmDelete = (id: number) => {
-    confirmDialog({
-      message: "Are you sure you want to delete this article?",
-      header: "Confirmation",
-      icon: "pi pi-exclamation-triangle",
-      accept: () => handleDelete(id),
-    });
-  };
+  const authorBody = (rowData: Article) => (
+    <span>{rowData.author ? `${rowData.author.first_name} ${rowData.author.last_name}` : "—"}</span>
+  );
+
+  const categoriesBody = (rowData: Article) => (
+    <span>{rowData.categories?.map((c) => c.name).join(", ") ?? "—"}</span>
+  );
+
+  const dateBody = (rowData: Article) => (
+    <span className="text-gray-500 text-sm">
+      {new Date(rowData.created_at).toLocaleDateString()}
+    </span>
+  );
 
   return (
     <>
-      <div className="mb-3">
-        <Button
-          label="New Article"
-          icon="pi pi-plus"
-          className="p-button-success"
-          onClick={() => setCreateVisible(true)}
-        />
-      </div>
+      <TableHeader
+        count={data.length}
+        entityName="articles"
+        createLabel="New Article"
+        onCreate={() => setCreateVisible(true)}
+      />
 
-      <DataTable value={data} paginator rows={5}>
+      <DataTable
+        value={data}
+        paginator
+        rows={8}
+        rowsPerPageOptions={[5, 8, 15]}
+        stripedRows
+        showGridlines
+        emptyMessage="No articles found"
+        className="text-sm"
+      >
+        <Column field="id" header="ID" style={{ width: "4rem" }} />
         <Column field="title" header="Title" />
         <Column field="excerpt" header="Excerpt" />
-        <Column
-          header="Author"
-          body={(rowData: Article) =>
-            `${rowData.author.first_name} ${rowData.author.last_name}`
-          }
-        />
-        <Column
-          header="Categories"
-          body={(rowData: Article) =>
-            rowData.categories?.map((c) => c.name).join(", ") ?? "—"
-          }
-        />
-        <Column field="created_at" header="Created At" />
+        <Column header="Author" body={authorBody} />
+        <Column header="Categories" body={categoriesBody} />
+        <Column header="Created At" body={dateBody} />
         <Column
           header="Actions"
           body={(rowData: Article) => (
-            <div className="flex gap-2">
-              <button onClick={() => handleEdit(rowData)}>Edit</button>
-              <button onClick={() => confirmDelete(rowData.id)}>Delete</button>
-            </div>
+            <ActionsBody
+              onEdit={() => { setSelectedArticle(rowData); setEditVisible(true); }}
+              onDelete={() => confirmDeleteDialog("article", () => handleDelete(rowData.id))}
+              editTooltip="Edit article"
+              deleteTooltip="Delete article"
+            />
           )}
+          style={{ width: "8rem" }}
+          alignHeader="center"
+          align="center"
         />
       </DataTable>
 
-      <Dialog
+      <DashboardDialog
         header="Edit Article"
-        visible={visible}
-        style={{ width: "50vw" }}
-        onHide={() => setVisible(false)}
+        visible={editVisible}
+        onHide={() => setEditVisible(false)}
+        width="50vw"
       >
         {selectedArticle && (
           <ArticleEditForm article={selectedArticle} onSave={handleSave} />
         )}
-      </Dialog>
+      </DashboardDialog>
 
-      <Dialog
+      <DashboardDialog
         header="Create Article"
         visible={createVisible}
-        style={{ width: "50vw" }}
         onHide={() => setCreateVisible(false)}
+        width="50vw"
       >
         <ArticleCreateForm onSave={handleCreate} />
-      </Dialog>
+      </DashboardDialog>
 
-      <Toast ref={toast} />
+      <Toast ref={toast} position="bottom-right" />
     </>
   );
 }
