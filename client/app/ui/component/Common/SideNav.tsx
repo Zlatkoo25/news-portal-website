@@ -18,8 +18,8 @@ export default function SideNav() {
     // TODO: Logout button
 
     // TEMP: Access to pages under development
-    { label: 'Login', icon: 'pi pi-sign-in', url: '/login' },
-    { label: 'Reset', icon: 'pi pi-spin pi-undo', url: '/reset' },
+    // { label: 'Login', icon: 'pi pi-sign-in', url: '/login' },
+    // { label: 'Reset', icon: 'pi pi-spin pi-undo', url: '/reset' },
 
   ];
 
