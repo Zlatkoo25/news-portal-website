@@ -9,8 +9,17 @@ import { Article, Author, Category } from "@/app/lib/definitions";
 import ArticlesDashboardTable from "@/app/ui/component/Dashboard/Articles/ArticleDashboardTable";
 import AuthorsDashboardTable from "@/app/ui/component/Dashboard/Authors/AuthorDashboardTable";
 import CategoriesDashboardTable from "@/app/ui/component/Dashboard/Categories/CategoriesDashboardTable";
+import { useRouter } from "next/navigation";
 
 export default function ArticlesDashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem("access_token")) {
+      router.replace("/");
+    }
+  }, [router]);
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
